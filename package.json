@@ -1,0 +1,14 @@
+{
+  "name": "nfa",
+  "version": "1.0.0",
+  "description": "Simple regex implementation using NFA",
+  "main": "nfa.ts",
+  "license": "MIT",
+  "scripts": {
+    "ts-node": "ts-node"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  }
+}
