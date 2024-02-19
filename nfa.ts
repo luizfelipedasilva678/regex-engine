@@ -1,28 +1,21 @@
-class NFAState {
-  public state: number;
-  public symbol: string;
-  public next: NFAState | undefined = undefined;
+import { NFAState } from "./nfa-state";
 
-  constructor(symbol: string, state: number, next = undefined) {
-    this.state = state;
-    this.symbol = symbol;
-    this.next = next;
+export class NFA {
+  public paths: NFAState[] = [];
+  public count = 0;
+  public currentPath = 0;
+
+  constructor(regex: string) {
+    for (const symbol of regex) {
+      this.createState(symbol);
+    }
   }
-
-  match(input: string) {
-    return input === this.symbol;
-  }
-}
-
-class NFA {
-  initialState: NFAState | undefined = undefined;
-  count = 0;
 
   createState(symbol: string) {
-    if (this.initialState === undefined) {
-      this.initialState = new NFAState(symbol, this.count);
+    if (!this.paths[this.currentPath]) {
+      this.paths.push(new NFAState(symbol, this.count));
     } else {
-      let currentState = this.initialState;
+      let currentState = this.paths[this.currentPath];
 
       while (currentState.next !== undefined) {
         currentState = currentState.next;
@@ -30,7 +23,7 @@ class NFA {
 
       switch (symbol) {
         case "|":
-          console.log("----");
+          this.currentPath++;
           break;
         case "?":
           console.log("----");
@@ -50,33 +43,26 @@ class NFA {
   }
 
   test(input: string) {
-    let currentState = this.initialState;
+    let path = 0;
 
-    for (const symbol of input) {
-      if (currentState?.match(symbol)) {
-        if (currentState.next !== undefined) {
-          currentState = currentState.next;
+    while (path <= this.paths.length - 1) {
+      let currentState = this.paths[path];
+
+      for (const symbol of input) {
+        if (currentState?.match(symbol)) {
+          if (currentState.next !== undefined) {
+            currentState = currentState.next;
+          } else {
+            return 1;
+          }
         } else {
-          return 1;
+          currentState = this.paths[path];
         }
-      } else {
-        currentState = this.initialState;
       }
+
+      path++;
     }
 
     return 0;
   }
 }
-
-function client() {
-  const regex = "aaddddas";
-  const nfa = new NFA();
-
-  for (const symbol of regex) {
-    nfa.createState(symbol);
-  }
-
-  console.log(nfa.test("asdasdasdasdasdasdasdvvvzxxczzxczxcaaddddas"));
-}
-
-client();
