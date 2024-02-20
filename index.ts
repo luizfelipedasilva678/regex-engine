@@ -1,5 +1,4 @@
-import { NFA } from "./nfa";
+import NFA from "./nfa/nfa";
+const nfa = new NFA("aaca");
 
-const nfa = new NFA("aaa|bbb");
-
-console.log(nfa.test("sadfsdafscccdfsdf"));
+console.log(nfa.test("asdasdaaaabbcasdasd"));
