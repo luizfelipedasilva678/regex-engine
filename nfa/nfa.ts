@@ -4,6 +4,7 @@ import {
   ZERO_OR_MORE,
   ZERO_OR_ONE,
 } from "../constants";
+import ShuntingYard from "./shunting-yard";
 
 type Transition = {
   symbol: string;
@@ -21,6 +22,8 @@ export default class NFA {
   init() {
     let currentState = 0;
     const lastSymbolIdx = this.regex.length - 1;
+    const parser = new ShuntingYard();
+    console.log(parser.transform(this.regex));
 
     for (let i = 0; i < this.regex.length; i++) {
       const symbol = this.regex.charAt(i);
