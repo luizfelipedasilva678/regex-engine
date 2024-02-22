@@ -1,7 +1,7 @@
 import Stack from "../stack";
-import * as constants from "../../constants";
+import * as constants from "../constants";
 
-export default class ShuntingYard {
+export default class RegexFormatter {
   private operatorsStack = new Stack<string>();
   private precedenceTable: Record<string, number> = {
     [constants.ONE_OR_MORE]: 3,
@@ -11,17 +11,36 @@ export default class ShuntingYard {
     [constants.ALTERNATION]: 1,
   };
 
-  private tokenize(expression: string) {
-    const pattern = new RegExp(/\w|\d|-|\*|\(|\)|\^|\+|\||\?|\/|\./, "g");
-    const tokens = expression.match(pattern) ?? [];
+  private formatRegex(regex: string) {
+    const output: string[] = [];
 
-    for (let i = 0; i < tokens.length; i++) {
-      if (!this.isOperator(tokens[i]) && !this.isOperator(tokens[i + 1])) {
-        console.log(tokens[i]);
+    for (let i = 0; i < regex.length; i++) {
+      const nextIdx = i + 1;
+      const currentChar = regex.charAt(i);
+
+      output.push(regex[i]);
+
+      if (nextIdx < regex.length) {
+        const nextChar = regex.charAt(nextIdx);
+
+        if (
+          currentChar !== constants.LEFT_PARENTHESIS &&
+          currentChar !== constants.ALTERNATION &&
+          nextChar !== constants.RIGHT_PARENTHESIS &&
+          !this.isOperator(nextChar)
+        ) {
+          output.push(constants.CONCATENATION);
+        }
       }
     }
 
-    return expression.match(pattern) ?? [];
+    return output.join("");
+  }
+
+  private tokenize(expression: string) {
+    const pattern = new RegExp(/\w|\d|-|\*|\(|\)|\^|\+|\||\?|\/|\./, "g");
+    const tokens = this.formatRegex(expression).match(pattern) ?? [];
+    return tokens;
   }
 
   private isOperator(token: string) {
@@ -57,7 +76,7 @@ export default class ShuntingYard {
     }
   }
 
-  public transform(expression: string) {
+  public infixToPostfix(expression: string) {
     this.operatorsStack.clear();
     const tokens = this.tokenize(expression);
     const outputList: string[] = [];

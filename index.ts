@@ -1,4 +1,4 @@
-import NFA from "./nfa/nfa";
-const nfa = new NFA("aa*(a+b)");
+import NFA from "./src/nfa";
+const nfa = new NFA();
 
-console.log(nfa.test("asdasdaaaabbcasdasd"));
+nfa.buildNFA("bac");

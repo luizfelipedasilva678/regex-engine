@@ -5,27 +5,27 @@ export default class Stack<T> {
     this._items = [];
   }
 
-  push(element: T): void {
+  public push(element: T): void {
     this._items.push(element);
   }
 
-  pop(): T | undefined {
+  public pop(): T | undefined {
     return this._items.pop();
   }
 
-  peek(): T | undefined {
+  public peek(): T | undefined {
     return this._items[this._items.length - 1];
   }
 
-  isEmpty(): boolean {
+  public isEmpty(): boolean {
     return this._items.length === 0;
   }
 
-  size(): number {
+  public size(): number {
     return this._items.length;
   }
 
-  clear(): void {
+  public clear(): void {
     this._items = [];
   }
 }
