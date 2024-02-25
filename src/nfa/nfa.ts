@@ -65,7 +65,7 @@ export default class NFA {
     this.nfaStack.clear();
     const formattedRegex = this.formatter.infixToPostfix(regex);
     const tokens = this.tokenize(formattedRegex);
-    let idCounter = 0;
+    let idCounter = 1;
 
     for (const token of tokens) {
       switch (token) {
@@ -94,14 +94,28 @@ export default class NFA {
             this.mergeState(frag1, frag);
             this.mergeState(frag2, frag);
 
+            const transitionsFrag1 = Array.from(frag1.adjList.values()).flat(
+              Infinity
+            ) as Transition[];
+            const transitionsFrag2 = Array.from(frag2.adjList.values()).flat(
+              Infinity
+            ) as Transition[];
+
+            const transitions = [...transitionsFrag1, ...transitionsFrag2];
+
+            for (const transition of transitions) {
+              if (transition.toState === constants.FINAL_STATE) {
+                transition.toState = endState;
+              }
+            }
+
             frag.adjList.set(startState, [
               new Transition(constants.EPSILON, frag1.startState),
               new Transition(constants.EPSILON, frag2.startState),
             ]);
 
             frag.adjList.set(endState, [
-              new Transition(constants.EPSILON, frag1.endState),
-              new Transition(constants.EPSILON, frag2.endState),
+              new Transition(constants.EPSILON, constants.FINAL_STATE),
             ]);
 
             this.nfaStack.push(frag);
