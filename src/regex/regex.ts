@@ -19,7 +19,7 @@ class NFAFrag {
 }
 
 export default class Regex {
-  private idCounter = 0;
+  private idCounter = constants.INITIAL_STATE;
   private adjList = new Map<string, Transition>();
   private nfaStack = new Stack<NFAFrag>();
   private formatter = new RegexFormatter();
@@ -36,7 +36,7 @@ export default class Regex {
 
   private join(out1: Out, out2: Out): Out {
     const state = this.getState();
-    const transition = new Transition("");
+    const transition = new Transition(constants.EPSILON);
     this.adjList.set(state, transition);
 
     out1.nextState = state;
