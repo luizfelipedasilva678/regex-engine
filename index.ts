@@ -1,4 +1,4 @@
-import NFA from "./src/nfa";
-const nfa = new NFA();
+import Regex from "./src/regex";
+const regex = new Regex();
 
-nfa.buildNFA("(s|d)|dd");
+regex.test("a(b|c)+d", "aaaa");

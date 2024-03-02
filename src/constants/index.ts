@@ -6,5 +6,6 @@ export const CONCATENATION = ".";
 export const INITIAL_STATE = 0;
 export const RIGHT_PARENTHESIS = ")";
 export const LEFT_PARENTHESIS = "(";
-export const FINAL_STATE = "Match";
+export const FINAL_STATE = "MATCH";
 export const EPSILON = "";
+export const SPLIT_TRANSITION = "SPLIT";

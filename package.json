@@ -5,9 +5,11 @@
   "main": "nfa.ts",
   "license": "MIT",
   "scripts": {
-    "ts-node": "ts-node"
+    "ts-node": "ts-node",
+    "tsc": "tsc"
   },
   "devDependencies": {
+    "@types/node": "^20.11.23",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }

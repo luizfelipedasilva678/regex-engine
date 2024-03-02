@@ -1,4 +1,4 @@
-import Stack from "../stack";
+import Stack from "../data-structures/stack";
 import * as constants from "../constants";
 
 export default class RegexFormatter {
