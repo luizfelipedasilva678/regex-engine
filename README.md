@@ -13,4 +13,4 @@ Supported meta characters:
 | \|             | alternate    |
 | +              | one or more  |
 
-You can see more informations about how to create your own regex engine [here](https://swtch.com/~rsc/regexp/regexp1.html).
+You can see more informations about how to create your own regex engine [here](https://swtch.com/~rsc/regexp/regexp1.html) (I used this article as a reference).
