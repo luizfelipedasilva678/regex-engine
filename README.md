@@ -1,6 +1,6 @@
-# Nfa regex implementation
+# Regex engine
 
-This is a regex implementation using [Thompson's construction algorithm](https://en.wikipedia.org/wiki/Thompson%27s_construction#:~:text=In%20computer%20science%2C%20Thompson's%20construction,strings%20against%20the%20regular%20expression.)
+This is a regex implementation using [Thompson's construction algorithm](https://en.wikipedia.org/wiki/Thompson%27s_construction#:~:text=In%20computer%20science%2C%20Thompson's%20construction,strings%20against%20the%20regular%20expression.).
 
 This was done just for educational purpose and I don`t think you should use this in production environments.
 
