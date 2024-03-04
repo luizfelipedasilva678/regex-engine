@@ -23,6 +23,8 @@ export default class Regex {
   private adjList = new Map<string, Transition>();
   private nfaStack = new Stack<NFAFrag>();
   private formatter = new RegexFormatter();
+  private clist = new Set<string>();
+  private nlist = new Set<string>();
 
   private tokenize(regex: string) {
     return regex.split("");
@@ -120,14 +122,63 @@ export default class Regex {
     return nfa;
   }
 
-  test(regex: string, str: string) {
-    const nfa = this.buildNFA(regex);
-    const currentState = this.adjList.get(nfa!.start)!;
-
-    console.log(currentState);
-
-    for (const char of str) {
-      console.log(char);
+  private matchSymbol(state: string, c: string) {
+    if (state === constants.FINAL_STATE) {
+      this.nlist.add(state);
+      return;
     }
+
+    const transition = this.adjList.get(state);
+
+    if (!transition) return;
+
+    if (transition!.symbol === constants.SPLIT_TRANSITION) {
+      this.matchSymbol(transition.out1.nextState!, c);
+      this.matchSymbol(transition.out2.nextState!, c);
+      return;
+    }
+
+    if (transition!.symbol === constants.EPSILON) {
+      this.matchSymbol(transition.out1.nextState!, c);
+      return;
+    }
+
+    if (transition && transition!.symbol === c) {
+      this.nlist.add(transition.out1.nextState!);
+    }
+  }
+
+  public match(regex: string, input: string) {
+    const nfa = this.buildNFA(regex);
+    this.nlist.clear();
+    this.clist.clear();
+    this.clist.add(nfa!.start);
+
+    for (const c of input) {
+      for (const state of this.clist) {
+        this.matchSymbol(state, c);
+      }
+
+      const tmp = this.clist;
+      this.clist = this.nlist;
+      this.nlist = tmp;
+    }
+
+    for (const state of this.clist) {
+      if (state === constants.FINAL_STATE) return true;
+
+      const transition = this.adjList.get(state);
+
+      if (transition) {
+        if (
+          transition.symbol === constants.EPSILON &&
+          transition.out1.nextState === constants.FINAL_STATE
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 }
