@@ -19,12 +19,17 @@ class NFAFrag {
 }
 
 export default class Regex {
+  private readonly regex: string;
   private idCounter = constants.INITIAL_STATE;
-  private adjList = new Map<string, Transition>();
-  private nfaStack = new Stack<NFAFrag>();
-  private formatter = new RegexFormatter();
-  private clist = new Set<string>();
-  private nlist = new Set<string>();
+  private readonly adjList = new Map<string, Transition>();
+  private readonly nfaStack = new Stack<NFAFrag>();
+  private readonly formatter = new RegexFormatter();
+  private clist: string[] = [];
+  private nlist: string[] = [];
+
+  constructor(regex: string) {
+    this.regex = regex;
+  }
 
   private tokenize(regex: string) {
     return regex.split("");
@@ -122,60 +127,48 @@ export default class Regex {
     return nfa;
   }
 
-  private matchSymbol(state: string, c: string) {
-    if (state === constants.FINAL_STATE) {
-      this.nlist.add(state);
+  private addState(nextState: string, list: string[]) {
+    if (nextState === constants.FINAL_STATE) {
+      this.nlist.push(nextState);
       return;
     }
 
-    const transition = this.adjList.get(state);
+    if (list.indexOf(nextState) !== -1 || !this.adjList.get(nextState)) return;
 
-    if (!transition) return;
-
-    if (transition!.symbol === constants.SPLIT_TRANSITION) {
-      this.matchSymbol(transition.out1.nextState!, c);
-      this.matchSymbol(transition.out2.nextState!, c);
+    if (this.adjList.get(nextState)!.symbol === constants.EPSILON) {
+      this.addState(this.adjList.get(nextState)!.out1!.nextState!, list);
       return;
     }
 
-    if (transition!.symbol === constants.EPSILON) {
-      this.matchSymbol(transition.out1.nextState!, c);
+    if (this.adjList.get(nextState)!.symbol === constants.SPLIT_TRANSITION) {
+      this.addState(this.adjList.get(nextState)!.out1!.nextState!, list);
+      this.addState(this.adjList.get(nextState)!.out2!.nextState!, list);
       return;
     }
 
-    if (transition && transition!.symbol === c) {
-      this.nlist.add(transition.out1.nextState!);
-    }
+    list.push(nextState);
   }
 
-  public match(regex: string, input: string) {
-    const nfa = this.buildNFA(regex);
-    this.nlist.clear();
-    this.clist.clear();
-    this.clist.add(nfa!.start);
+  public match(input: string) {
+    const nfa = this.buildNFA(this.regex);
+
+    this.addState(nfa!.start, this.clist);
 
     for (const c of input) {
+      this.nlist = [];
+
       for (const state of this.clist) {
-        this.matchSymbol(state, c);
+        if (this.adjList.get(state) && this.adjList.get(state)!.symbol === c) {
+          this.addState(this.adjList.get(state)!.out1!.nextState!, this.nlist);
+        }
       }
 
-      const tmp = this.clist;
       this.clist = this.nlist;
-      this.nlist = tmp;
     }
 
     for (const state of this.clist) {
-      if (state === constants.FINAL_STATE) return true;
-
-      const transition = this.adjList.get(state);
-
-      if (transition) {
-        if (
-          transition.symbol === constants.EPSILON &&
-          transition.out1.nextState === constants.FINAL_STATE
-        ) {
-          return true;
-        }
+      if (state === constants.FINAL_STATE) {
+        return true;
       }
     }
 
